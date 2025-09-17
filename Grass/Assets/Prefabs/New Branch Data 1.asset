@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f50e4301a85c744eaa8717f0a31b317, type: 3}
+  m_Name: New Branch Data 1
+  m_EditorClassIdentifier: 
+  radius: 1
+  segments: 10
+  percent: 50
+  branchLength: 2.1
+  endType: 1
+  childBranch: {fileID: 11400000, guid: 04368f1ff5bd3644c93bb1a2695f2bcb, type: 2}
