@@ -1,0 +1,166 @@
+// // #pragma kernel CSMain
+
+// // RWStructuredBuffer<float4> PosScaleBuffer; // xyz = pos, w = scale
+// // RWStructuredBuffer<float4> ColorBuffer;    // rgba
+// // RWTexture2D<float4> gradientTex;
+
+// // cbuffer Params
+// // {
+// //     float2 areaSize;
+// //     float width;
+// //     float height;
+// //     float positionNoise;
+// //     float scaleNoise;
+// //     uint grassCount;
+// // };
+
+// // [numthreads(256,1,1)]
+// // void CSMain(uint3 id : SV_DispatchThreadID)
+// // {
+// //     uint index = id.x;
+// //     if(index >= grassCount) return;
+
+// //     // Grid tabanlı pozisyon
+// //     float gridSize = ceil(sqrt(grassCount));
+// //     float cellX = areaSize.x / gridSize;
+// //     float cellZ = areaSize.y / gridSize;
+// //     uint x = index % (uint)gridSize;
+// //     uint z = index / (uint)gridSize;
+
+// //     float noiseX = (frac(sin(index*12.345)*43758.5453) - 0.5) * positionNoise;
+// //     float noiseZ = (frac(sin(index*78.233)*43758.5453) - 0.5) * positionNoise;
+
+// //     float posX = (x + 0.5) * cellX - areaSize.x * 0.5 + noiseX;
+// //     float posZ = (z + 0.5) * cellZ - areaSize.y * 0.5 + noiseZ;
+// //     float y = 0;
+
+// //     // Scale
+// //     float scale = 1.0 + (frac(sin(index*34.567)*43758.5453)-0.5) * scaleNoise;
+
+// //     // Gradient’den renk
+// //     float t = frac(sin(index*98.765)*43758.5453);
+// //     uint w,h;
+// //     gradientTex.GetDimensions(w,h);
+// //     uint xIndex = (uint)(t * (w-1));
+// //     float4 color = gradientTex[int2(xIndex,0)];
+
+// //     PosScaleBuffer[index] = float4(posX, y, posZ, scale);
+// //     ColorBuffer[index] = color;
+
+
+// // }
+// #pragma kernel CSMain
+
+// RWStructuredBuffer<float4> PosScaleBuffer;
+// RWStructuredBuffer<float4> ColorBuffer;
+// Texture2D<float4> gradientTex; // Changed from RWTexture2D
+// SamplerState linearSampler; // Added sampler
+
+// cbuffer Params : register(b0)
+// {
+//     float2 areaSize;
+//     float width;
+//     float height;
+//     float positionNoise;
+//     float scaleNoise;
+//     uint grassCount;
+// };
+
+// [numthreads(256,1,1)]
+// void CSMain(uint3 id : SV_DispatchThreadID)
+// {
+//     uint index = id.x;
+//     if(index >= grassCount) return;
+
+//     // Better random function
+//     float rand(float seed)
+//     {
+//         return frac(sin(dot(float2(seed, index), float2(12.9898, 78.233))) * 43758.5453);
+//     }
+
+//     // Grid positioning
+//     uint gridSize = (uint)ceil(sqrt((float)grassCount));
+//     float cellX = areaSize.x / gridSize;
+//     float cellZ = areaSize.y / gridSize;
+//     uint x = index % gridSize;
+//     uint z = index / gridSize;
+
+//     // Improved noise
+//     float noiseX = (rand(12.345) - 0.5) * positionNoise;
+//     float noiseZ = (rand(78.233) - 0.5) * positionNoise;
+
+//     float posX = (x + 0.5) * cellX - areaSize.x * 0.5 + noiseX;
+//     float posZ = (z + 0.5) * cellZ - areaSize.y * 0.5 + noiseZ;
+//     float y = 0;
+
+//     // Scale with clamping
+//     float scale = clamp(1.0 + (rand(34.567) - 0.5) * scaleNoise, 0.1, 2.0);
+
+//     // Gradient sampling with proper texture sampling
+//     float t = rand(98.765);
+//     float4 color = gradientTex.SampleLevel(linearSampler, float2(t, 0), 0);
+
+//     PosScaleBuffer[index] = float4(posX, y, posZ, scale);
+//     ColorBuffer[index] = color;
+// }
+
+#pragma kernel CSMain
+
+RWStructuredBuffer<float4> PosScaleBuffer; // xyz = position, w = scale
+RWStructuredBuffer<float4> ColorBuffer;    // rgba
+RWTexture2D<float4> gradientTex;           // CPU’dan gönderilecek
+
+cbuffer Params
+{
+    float2 areaSize;
+    float width;
+    float height;
+    float positionNoise;
+    float scaleNoise;
+    uint grassCount;
+}
+
+// Better random function
+float rand(float2 seed)
+{
+    return frac(sin(dot(seed, float2(12.9898, 78.233))) * 43758.5453);
+}
+
+[numthreads(64,1,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    uint index = id.x;
+    if (index >= grassCount) return;
+
+    // Grid-based positioning
+    uint gridSize = (uint)ceil(sqrt((float)grassCount));
+    float cellSizeX = areaSize.x / gridSize;
+    float cellSizeZ = areaSize.y / gridSize;
+
+    uint x = index % gridSize;
+    uint z = index / gridSize;
+
+    // Add noise to position
+    float2 noiseSeed = float2(index, index * 1.618);
+    float noiseX = (rand(noiseSeed) - 0.5) * positionNoise;
+    float noiseZ = (rand(noiseSeed * 2.0) - 0.5) * positionNoise;
+
+    float posX = (x + 0.5) * cellSizeX - areaSize.x * 0.5 + noiseX;
+    float posZ = (z + 0.5) * cellSizeZ - areaSize.y * 0.5 + noiseZ;
+    float posY = 0;
+
+    // Scale with noise
+    float scale = 1.0 + (rand(noiseSeed * 3.0) - 0.5) * scaleNoise;
+    scale = clamp(scale, 0.1, 2.0);
+
+    // Color from gradient
+    float colorT = rand(noiseSeed * 5.0);
+    uint widthTex, heightTex;
+    gradientTex.GetDimensions(widthTex, heightTex);
+    uint xIndex = (uint)(colorT * (widthTex - 1));
+    float4 color = gradientTex[int2(xIndex,0)];
+
+    // Write to buffers
+    PosScaleBuffer[index] = float4(posX, posY, posZ, scale);
+    ColorBuffer[index] = color;
+}
