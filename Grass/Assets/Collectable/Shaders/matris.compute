@@ -1,0 +1,71 @@
+#pragma kernel CSMain
+
+RWStructuredBuffer<float4x4> matrices;
+
+int instanceCount;
+float3 areaSize;
+float3 rotationMin;
+float3 rotationMax;
+float scaleMin;
+float scaleMax;
+
+// Simple hash-based random functions (pseudo)
+float Rand(uint seed) { return frac(sin(seed) * 43758.5453); }
+float3 Rand3(uint seed) { return float3(Rand(seed), Rand(seed+1), Rand(seed+2)); }
+
+// Rotation matrices
+float4x4 RotateX(float angle) 
+{ 
+    float s=sin(angle); 
+    float c=cos(angle); 
+    return float4x4(1,0,0,0,
+                    0,c,-s,0,
+                    0,s,c,0,
+                    0,0,0,1); 
+}
+float4x4 RotateY(float angle) 
+{ 
+    float s=sin(angle); 
+    float c=cos(angle); 
+    return float4x4(c,0,s,0,
+                    0,1,0,0,
+                    -s,0,c,0,
+                    0,0,0,1); 
+}
+float4x4 RotateZ(float angle) 
+{ 
+    float s=sin(angle); 
+    float c=cos(angle); 
+    return float4x4(c,-s,0,0,
+                    s,c,0,0,
+                    0,0,1,0,
+                    0,0,0,1); 
+}
+
+[numthreads(64,1,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= instanceCount) return;
+
+    // Position
+    float3 pos = (Rand3(id.x) - 0.5) * areaSize;
+
+    // Rotation
+    float3 rot = lerp(rotationMin, rotationMax, Rand3(id.x));
+
+    // Scale
+    float s = lerp(scaleMin, scaleMax, Rand(id.x + 7));
+
+    // Matris hesaplama
+    float4x4 rotMat = mul(RotateX(rot.x), mul(RotateY(rot.y), RotateZ(rot.z)));
+    float4x4 scaleMat = float4x4(s,0,0,0,
+                                 0,s,0,0,
+                                 0,0,s,0,
+                                 0,0,0,1);
+    float4x4 transMat = float4x4(1,0,0,pos.x,
+                                 0,1,0,pos.y,
+                                 0,0,1,pos.z,
+                                 0,0,0,1);
+
+    matrices[id.x] = mul(transMat, mul(rotMat, scaleMat));
+}

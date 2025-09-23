@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &277759179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,12 +154,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectToSpawn: {fileID: 8258637479391866517, guid: 5d70407183cd9be42b2e33530ce1baf0, type: 3}
-  spawnCount: 5980
+  spawnCount: 100000
   areaSize: {x: 1000, y: 10, z: 1000}
-  randomRotation: 1
+  randomRotation: 0
   rotationMin: {x: 0, y: 0, z: 0}
   rotationMax: {x: 360, y: 360, z: 360}
-  randomScale: 1
+  randomScale: 0
   minScale: 0.5
   maxScale: 2
 --- !u!4 &277759180
@@ -686,7 +686,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1547655243
 MonoBehaviour:
   m_ObjectHideFlags: 0
