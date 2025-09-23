@@ -276,7 +276,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 78.66667
+    y: 24
     width: 372.33334
     height: 555.3333
   m_SerializedDataModeController:
@@ -942,8 +942,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Project\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 478.6667
-    y: 78.66667
+    x: 479.66666
+    y: 24
     width: 236.66666
     height: 555.3333
   m_SerializedDataModeController:
@@ -985,7 +985,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: c2e00000
     m_LastClickedID: 57538
-    m_ExpandedIDs: 000000007abc00007cbc00007ebc000080bc0000
+    m_ExpandedIDs: 00000000d4bc0000d6bc0000d8bc0000dabc0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1014,7 +1014,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: ffffffff000000007abc00007cbc00007ebc000080bc0000
+    m_ExpandedIDs: 00000000d4bc0000d6bc0000d8bc0000dabc0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1093,8 +1093,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Hierarchy\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 717.3334
-    y: 78.66667
+    x: 718.3333
+    y: 24
     width: 194
     height: 555.3333
   m_SerializedDataModeController:
@@ -1111,7 +1111,7 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 7eba0000
+      m_SelectedIDs: 
       m_LastClickedID: 0
       m_ExpandedIDs: 02fbffff
       m_RenameOverlay:
@@ -1159,8 +1159,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 913.3334
-    y: 78.66667
+    x: 914.3333
+    y: 24
     width: 365.6667
     height: 555.3333
   m_SerializedDataModeController:
@@ -1208,8 +1208,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 373.33334
-    y: 78.66667
+    x: 374.33334
+    y: 24
     width: 103.33331
     height: 555.3333
   m_SerializedDataModeController:

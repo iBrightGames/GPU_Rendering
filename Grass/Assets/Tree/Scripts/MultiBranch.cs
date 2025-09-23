@@ -9,18 +9,6 @@ public class MultiCircleGizmo : MonoBehaviour
         if (rootBranch == null) return;
         DrawMainBranch(transform.position, rootBranch, 0, 90); // 90 derece yukarı
     }
-    void DrawTree(Vector3 start, BranchData branch)
-    {
-
-    }
-    void DrawMainLine()
-    {
-
-    }
-    void DrawCircle()
-    {
-        
-    }
     void DrawMainBranch(Vector3 start, BranchData branch, int depth, float rotationAngle)
     {
         // Ana dalı çiz
