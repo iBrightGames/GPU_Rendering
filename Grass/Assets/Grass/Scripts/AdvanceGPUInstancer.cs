@@ -8,7 +8,7 @@ public class AdvancedGPUInstancer : MonoBehaviour
 
     [Header("Spawn Settings")]
     [Tooltip("Number of instances to spawn.")]
-    [Range(1, 1000)]
+    [Range(1, 100000)]
     public int spawnCount = 100;
 
     [Header("Area Limits")]
