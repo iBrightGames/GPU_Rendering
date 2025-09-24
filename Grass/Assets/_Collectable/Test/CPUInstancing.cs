@@ -77,7 +77,7 @@ public class CPUInstancer : MonoBehaviour
         {
             Vector3 pos = new Vector3(
                 Random.Range(-areaSize.x / 2, areaSize.x / 2) + center.x,
-                0f,
+                Random.Range(-areaSize.y / 2, areaSize.y / 2) + center.y,
                 Random.Range(-areaSize.z / 2, areaSize.z / 2) + center.z
             );
             positions.Add(pos);

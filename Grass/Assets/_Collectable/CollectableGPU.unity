@@ -321,8 +321,8 @@ MonoBehaviour:
   - {x: 1, y: 0, z: 0}
   - {x: 2, y: 0, z: 0}
   prefab: {fileID: 1466294212}
-  spawnCount: 1000
-  areaSize: {x: 50, y: 0, z: 50}
+  spawnCount: 100000
+  areaSize: {x: 1000, y: 100, z: 1000}
 --- !u!4 &1047433724
 Transform:
   m_ObjectHideFlags: 0
@@ -623,7 +623,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1650002828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -637,8 +637,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectToSpawn: {fileID: 1335555123}
-  spawnCount: 1000
-  areaSize: {x: 100, y: 10, z: 100}
+  spawnCount: 100000
+  areaSize: {x: 100, y: 1000, z: 100}
   positions: []
 --- !u!4 &1650002829
 Transform:
@@ -763,7 +763,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1887828765
 MonoBehaviour:
   m_ObjectHideFlags: 0
