@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class TimeLineSpriteComputeInstancer : MonoBehaviour
 {
@@ -26,10 +27,38 @@ public class TimeLineSpriteComputeInstancer : MonoBehaviour
     struct InstanceData
     {
         public Vector3 position;
-        public float scale;
+        public int active; // 1: etkileşimli / 0: yok edilecek
     }
 
+
     bool bufferInitialized = false;
+    public ComputeShader filterShader;
+
+    void FilterInstances(Vector3 playerPos, float radius)
+    {
+        int kernel = filterShader.FindKernel("CSMain");
+        filterShader.SetBuffer(kernel, "instanceBuffer", instanceBuffer);
+        filterShader.SetVector("playerPos", playerPos);
+        filterShader.SetFloat("radius", radius);
+
+        int threadGroups = Mathf.CeilToInt(positions.Count / 256f);
+        filterShader.Dispatch(kernel, threadGroups, 1, 1);
+
+        // CPU'ya oku
+        AsyncGPUReadback.Request(instanceBuffer, req =>
+        {
+            if(req.hasError) return;
+            InstanceData[] data = req.GetData<InstanceData>().ToArray();
+
+            // active==0 olanları yok et
+            for(int i = 0; i < data.Length; i++)
+            {
+                if(data[i].active == 0)
+                    positions[i] = Vector3.negativeInfinity; // örnek yok etme
+            }
+            UpdateBuffer(); // buffer tekrar GPU'ya gönder
+        });
+    }
 
     void Start()
     {
@@ -96,7 +125,7 @@ public class TimeLineSpriteComputeInstancer : MonoBehaviour
 
         InstanceData[] dataArray = new InstanceData[positions.Count];
         for (int i = 0; i < positions.Count; i++)
-            dataArray[i] = new InstanceData { position = positions[i], scale = scaleMultiplier };
+            dataArray[i] = new InstanceData { position = positions[i], active=0 };
 
         instanceBuffer.SetData(dataArray);
     }

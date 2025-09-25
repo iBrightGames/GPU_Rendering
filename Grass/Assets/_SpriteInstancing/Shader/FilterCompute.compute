@@ -1,0 +1,56 @@
+
+#pragma kernel CSMain
+
+struct InstanceData
+{
+    float3 position;
+    int active;
+};
+
+// Master list of all instances
+RWStructuredBuffer<InstanceData> _ComputeInstanceDataBuffer;
+
+// New: List of instances that are still active (for rendering)
+AppendStructuredBuffer<InstanceData> activeBuffer;
+
+// Old: List of instances that were just deactivated (for CPU calls)
+AppendStructuredBuffer<InstanceData> filteredBuffer;
+
+float3 playerPos;
+float radius;
+uint maxInstances;
+
+[numthreads(256,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    uint idx = id.x;
+    if (idx >= maxInstances) return;
+
+    InstanceData data = _ComputeInstanceDataBuffer[idx];
+    bool wasActive = (data.active == 1);
+
+    // If active and within the erase radius
+    if (wasActive)
+    {
+        float3 diff = data.position - playerPos;
+        float distSq = dot(diff, diff);
+        
+        if (distSq < radius * radius)
+        {
+            // Update the master buffer to set active to 0
+            data.active = 0;
+            _ComputeInstanceDataBuffer[idx] = data;
+            
+            // Append the now-deactivated sprite to the filteredBuffer
+            filteredBuffer.Append(data);
+        }
+    }
+    
+    // Regardless of whether it was just deactivated,
+    // if its CURRENT active status is 1, append it to the activeBuffer
+    if (_ComputeInstanceDataBuffer[idx].active == 1)
+    {
+        activeBuffer.Append(_ComputeInstanceDataBuffer[idx]);
+    }
+}
+
