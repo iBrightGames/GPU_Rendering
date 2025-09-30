@@ -211,7 +211,7 @@ Transform:
   m_GameObject: {fileID: 248041548}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 52.1, z: -56.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -399,7 +399,7 @@ Transform:
   m_GameObject: {fileID: 1043464648}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -136.9, y: 1.1, z: 0}
+  m_LocalPosition: {x: -110.2, y: -5.3, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -491,13 +491,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270858664}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -126}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 85, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &1270858668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -660,13 +660,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 1043464648}
   sourceSprite: {fileID: 1392248985}
-  maxInstances: 10000
+  maxInstances: 100000
   startInstanceCount: 1000
-  spawnPerFrame: 10
+  spawnPerFrame: 100
   eraseRadius: 10
   scaleMultiplier: 5
-  minPosition: {x: -100, y: -100, z: 0}
-  maxPosition: {x: 100, y: 100, z: 0}
+  minPosition: {x: -500, y: 0, z: -500}
+  maxPosition: {x: 500, y: 0, z: 500}
   filterComputeShader: {fileID: 7200000, guid: 1f0bea67633a77447a99837472f953ec, type: 3}
   instancingMaterial: {fileID: 2100000, guid: 5c768cddd1176804a89a351ac3de54e3, type: 2}
 --- !u!4 &1423665393

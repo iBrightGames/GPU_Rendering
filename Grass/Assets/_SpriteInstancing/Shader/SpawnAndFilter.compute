@@ -1,99 +1,63 @@
 
-// #pragma kernel CSMain
-// #pragma kernel CSSpawnNew
-
-// struct InstanceData
-// {
-//     float3 position;
-//     int active; // 1: Active, 0: Inactive (Artık CSMain'de sadece filteredBuffer'a eklerken kullanılır)
-// };
-
-// // Buffers
-// StructuredBuffer<InstanceData> inputBuffer;
-// AppendStructuredBuffer<InstanceData> activeBuffer;
-// AppendStructuredBuffer<InstanceData> filteredBuffer;
-// StructuredBuffer<InstanceData> spawnDataBuffer; // Yeni spawn pozisyonları
-
-// // Shader parameters
-// float3 playerPos;
-// float radius;
-// uint maxInstances; // CSMain için (başlangıçtaki max buffer boyutu)
-// uint spawnCount;   // CSSpawnNew için (her frame'de kaç tane ekleneceği)
-
-// // Compute kernel: Filtreleme
-// [numthreads(64,1,1)]
-// void CSMain(uint3 id : SV_DispatchThreadID)
-// {
-//     uint idx = id.x;
-//     if (idx >= maxInstances) return;
-
-//     InstanceData data = inputBuffer[idx];
-    
-//     // Eğer başlangıçta inactive (veya önceki frame'de filtered) ise atla
-//     if (data.active == 0) return;
-
-//     float3 diff = data.position - playerPos;
-//     float distSq = dot(diff, diff);
-//     float radiusSq = radius * radius;
-
-//     if (distSq < radiusSq)
-//     {
-//         // Silindi, filtered buffer'a ekle (active:0)
-//         data.active = 0; // İsteğe bağlı, CPU okuması için işaretleme
-//         filteredBuffer.Append(data); 
-//     }
-//     else
-//     {
-//         // Aktif kaldı, nextActiveBuffer'a ekle (active:1)
-//         activeBuffer.Append(data);
-//     }
-// }
-
-// // Compute kernel: Yeni instance'ları ekleme
-// [numthreads(64,1,1)]
-// void CSSpawnNew(uint3 id : SV_DispatchThreadID)
-// {
-//     uint idx = id.x;
-//     if (idx >= spawnCount) return;
-
-//     // spawnDataBuffer'dan pozisyonu al ve aktif buffer'a ekle
-//     InstanceData data = spawnDataBuffer[idx];
-//     activeBuffer.Append(data);
-// }
 #pragma kernel CSMain
+#pragma kernel CSSpawnNew
 
 struct InstanceData
 {
     float3 position;
-    int active;
+    int active; // 1: Active, 0: Inactive (Artık CSMain'de sadece filteredBuffer'a eklerken kullanılır)
 };
 
-RWStructuredBuffer<InstanceData> instanceBuffer;
-RWStructuredBuffer<InstanceData> resultBuffer;
+// Buffers
+StructuredBuffer<InstanceData> inputBuffer;
+AppendStructuredBuffer<InstanceData> activeBuffer;
+AppendStructuredBuffer<InstanceData> filteredBuffer;
+StructuredBuffer<InstanceData> spawnDataBuffer; // Yeni spawn pozisyonları
 
+// Shader parameters
 float3 playerPos;
 float radius;
-int instanceCount;
+uint maxInstances; // CSMain için (başlangıçtaki max buffer boyutu)
+uint spawnCount;   // CSSpawnNew için (her frame'de kaç tane ekleneceği)
 
+// Compute kernel: Filtreleme
 [numthreads(64,1,1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     uint idx = id.x;
-    if (idx >= instanceCount) return;
+    if (idx >= maxInstances) return;
 
-    InstanceData data = instanceBuffer[idx];
+    InstanceData data = inputBuffer[idx];
+    
+    // Eğer başlangıçta inactive (veya önceki frame'de filtered) ise atla
+    if (data.active == 0) return;
+
     float3 diff = data.position - playerPos;
     float distSq = dot(diff, diff);
     float radiusSq = radius * radius;
 
     if (distSq < radiusSq)
     {
-        data.active = 0; // Silinecek
+        // Silindi, filtered buffer'a ekle (active:0)
+        data.active = 0; // İsteğe bağlı, CPU okuması için işaretleme
+        filteredBuffer.Append(data); 
     }
     else
     {
-        data.active = 1; // Kalacak
+        // Aktif kaldı, nextActiveBuffer'a ekle (active:1)
+        activeBuffer.Append(data);
     }
-
-    resultBuffer[idx] = data;
 }
+
+// Compute kernel: Yeni instance'ları ekleme
+[numthreads(64,1,1)]
+void CSSpawnNew(uint3 id : SV_DispatchThreadID)
+{
+    uint idx = id.x;
+    if (idx >= spawnCount) return;
+
+    // spawnDataBuffer'dan pozisyonu al ve aktif buffer'a ekle
+    InstanceData data = spawnDataBuffer[idx];
+    activeBuffer.Append(data);
+}
+
