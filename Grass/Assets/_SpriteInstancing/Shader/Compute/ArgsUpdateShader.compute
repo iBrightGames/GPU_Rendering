@@ -1,0 +1,18 @@
+#pragma kernel CSUpdateArgs
+
+#include "InstanceData.hlsl"
+
+AppendStructuredBuffer<InstanceData> inputBuffer;
+RWStructuredBuffer<uint> argsBuffer; // 5 uint: (indexCount, instanceCount, startIndex, baseVertex, startInstance)
+
+[numthreads(1,1,1)]
+void CSUpdateArgs (uint3 id : SV_DispatchThreadID)
+{
+    uint count = inputBuffer.IncrementCounter();
+
+    argsBuffer[0] = 6;          // indexCountPerInstance (örnek quad)
+    argsBuffer[1] = count;      // instanceCount
+    argsBuffer[2] = 0;          // startIndexLocation
+    argsBuffer[3] = 0;          // baseVertexLocation
+    argsBuffer[4] = 0;          // startInstanceLocation
+}

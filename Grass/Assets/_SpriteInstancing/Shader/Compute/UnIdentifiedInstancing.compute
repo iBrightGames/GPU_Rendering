@@ -1,0 +1,335 @@
+// InstanceData.hlsl Structure
+struct InstanceData
+{
+    float3 position;
+    float3 velocity;
+    float3 rotation;
+    int active;
+};
+
+// ============================================================================
+// SPAWNING KERNELS
+// ============================================================================
+
+#pragma kernel BoxRandom
+#pragma kernel BoxGrid  
+#pragma kernel BoxLayered
+#pragma kernel SphereRandom
+#pragma kernel SphereUniform
+#pragma kernel SphereLayered
+
+RWStructuredBuffer<InstanceData> Positions;
+uint PointCount;
+float3 Data1; // minPosition / center
+float3 Data2; // maxPosition / radius params  
+float3 Data3; // layerCount / startLayer / etc.
+uint RandomSeed;
+
+// Random generator
+float Random(uint seed)
+{
+    seed = (seed ^ 61) ^ (seed >> 16);
+    seed *= 9;
+    seed = seed ^ (seed >> 4);
+    seed *= 0x27d4eb2d;
+    seed = seed ^ (seed >> 15);
+    return float(seed) * (1.0 / 4294967296.0);
+}
+
+float3 RandomInCube(uint seed)
+{
+    return float3(
+        Random(seed),
+        Random(seed + 123),
+        Random(seed + 456)
+    );
+}
+
+// Box Kernels
+[numthreads(256,1,1)]
+void BoxRandom(uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= PointCount) return;
+    
+    float3 rnd = RandomInCube(id.x + RandomSeed);
+    InstanceData data;
+    data.position = Data1 + (Data2 - Data1) * rnd;
+    data.velocity = float3(0, 0, 0);
+    data.rotation = float3(0, 0, 0);
+    data.active = 1;
+    Positions[id.x] = data;
+}
+
+[numthreads(256,1,1)]
+void BoxGrid(uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= PointCount) return;
+    
+    uint pointsPerAxis = ceil(pow(PointCount, 1.0/3.0));
+    uint x = id.x % pointsPerAxis;
+    uint y = (id.x / pointsPerAxis) % pointsPerAxis; 
+    uint z = id.x / (pointsPerAxis * pointsPerAxis);
+    
+    float3 t = float3(x, y, z) / max(pointsPerAxis - 1, 1);
+    InstanceData data;
+    data.position = Data1 + (Data2 - Data1) * t;
+    data.velocity = float3(0, 0, 0);
+    data.rotation = float3(0, 0, 0);
+    data.active = 1;
+    Positions[id.x] = data;
+}
+
+[numthreads(256,1,1)]
+void BoxLayered(uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= PointCount) return;
+    
+    uint layerCount = uint(Data3.x);
+    uint pointsPerLayer = PointCount / layerCount;
+    uint layerIndex = id.x / pointsPerLayer;
+    layerIndex = min(layerIndex, layerCount - 1);
+    
+    float3 fullSize = Data2 - Data1;
+    float3 layerSize = fullSize / layerCount;
+    
+    float3 layerMin = Data1 + layerSize * layerIndex;
+    float3 layerMax = layerMin + layerSize;
+    
+    float3 rnd = RandomInCube(id.x + RandomSeed);
+    InstanceData data;
+    data.position = layerMin + (layerMax - layerMin) * rnd;
+    data.velocity = float3(0, 0, 0);
+    data.rotation = float3(0, 0, 0);
+    data.active = 1;
+    Positions[id.x] = data;
+}
+
+[numthreads(256,1,1)]
+void SphereRandom(uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= PointCount) return;
+    
+    float radius = Data2.x;
+    float3 randomDir = normalize(RandomInCube(id.x + RandomSeed) - 0.5);
+    InstanceData data;
+    data.position = Data1 + randomDir * radius * Random(id.x + RandomSeed + 789);
+    data.velocity = float3(0, 0, 0);
+    data.rotation = float3(0, 0, 0);
+    data.active = 1;
+    Positions[id.x] = data;
+}
+
+[numthreads(256,1,1)]
+void SphereUniform(uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= PointCount) return;
+    
+    float radius = Data2.x;
+    float t = id.x / (float)PointCount;
+    
+    float goldenAngle = 2.399963f;
+    float y = 1.0 - (t * 2.0);
+    float radiusAtY = sqrt(1.0 - y * y);
+    
+    float angle = id.x * goldenAngle;
+    
+    InstanceData data;
+    data.position = Data1 + float3(
+        cos(angle) * radiusAtY * radius,
+        y * radius, 
+        sin(angle) * radiusAtY * radius
+    );
+    data.velocity = float3(0, 0, 0);
+    data.rotation = float3(0, 0, 0);
+    data.active = 1;
+    Positions[id.x] = data;
+}
+
+[numthreads(256,1,1)]
+void SphereLayered(uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= PointCount) return;
+    
+    uint layerCount = uint(Data3.x);
+    float startRadius = Data3.y;
+    float maxRadius = Data2.x;
+    
+    uint pointsPerLayer = PointCount / layerCount;
+    uint layerIndex = id.x / pointsPerLayer;
+    layerIndex = min(layerIndex, layerCount - 1);
+    
+    float layerT = layerIndex / (float)(layerCount - 1);
+    float layerRadius = lerp(startRadius, maxRadius, layerT);
+    
+    float3 randomDir = normalize(RandomInCube(id.x + RandomSeed) - 0.5);
+    InstanceData data;
+    data.position = Data1 + randomDir * layerRadius * Random(id.x + RandomSeed + 999);
+    data.velocity = float3(0, 0, 0);
+    data.rotation = float3(0, 0, 0);
+    data.active = 1;
+    Positions[id.x] = data;
+}
+
+// ============================================================================
+// FRUSTUM CULLING KERNEL
+// ============================================================================
+
+#pragma kernel CSFrustumCull
+
+StructuredBuffer<InstanceData> inputBuffer;
+AppendStructuredBuffer<InstanceData> filteredBuffer;
+StructuredBuffer<float4> frustumPlanes; // 6 planes: normal.xyz + distance
+
+// Check if point is inside frustum
+bool IsInsideFrustum(float3 position)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        float4 plane = frustumPlanes[i];
+        float3 normal = plane.xyz;
+        float distance = plane.w;
+        
+        // Distance from point to plane (plane equation: dot(normal, point) + distance)
+        float dist = dot(normal, position) + distance;
+        
+        // If point is on negative side of any plane, it's outside frustum
+        // Add small tolerance for edge cases
+        if (dist < -0.1)
+            return false;
+    }
+    return true;
+}
+
+[numthreads(64,1,1)]
+void CSFrustumCull (uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= PointCount) return;
+
+    InstanceData d = inputBuffer[i];
+    if (d.active == 0) return;
+
+    if (IsInsideFrustum(d.position))
+    {
+        filteredBuffer.Append(d);
+    }
+}
+
+// ============================================================================
+// COPY ALL KERNEL (No Culling - For Testing)
+// ============================================================================
+
+#pragma kernel CSCopyAll
+
+[numthreads(64,1,1)]
+void CSCopyAll (uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= PointCount) return;
+
+    InstanceData d = inputBuffer[i];
+    if (d.active == 1)
+    {
+        filteredBuffer.Append(d);
+    }
+}
+
+// ============================================================================
+// BOUNDS CULLING KERNEL (Legacy - kept for compatibility)
+// ============================================================================
+
+#pragma kernel CSCull
+
+float3 minBounds;
+float3 maxBounds;
+
+[numthreads(64,1,1)]
+void CSCull (uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= PointCount) return;
+
+    InstanceData d = inputBuffer[i];
+    if (d.active == 0) return;
+
+    if (all(d.position >= minBounds) && all(d.position <= maxBounds))
+    {
+        filteredBuffer.Append(d);
+    }
+}
+
+// ============================================================================
+// NEAR PLAYER KERNEL
+// ============================================================================
+
+#pragma kernel CSNearPlayer
+
+StructuredBuffer<InstanceData> inputBufferNear;
+AppendStructuredBuffer<InstanceData> nearPlayerBuffer;
+
+float3 playerPos;
+float radius;
+
+[numthreads(64,1,1)]
+void CSNearPlayer (uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= PointCount) return;
+
+    InstanceData d = inputBufferNear[i];
+    if (d.active == 0) return;
+
+    float dist = distance(d.position, playerPos);
+    if (dist <= radius)
+    {
+        nearPlayerBuffer.Append(d);
+    }
+}
+
+// ============================================================================
+// DELETION KERNEL
+// ============================================================================
+
+#pragma kernel CSMarkDeletions
+
+RWStructuredBuffer<InstanceData> instances;
+AppendStructuredBuffer<int> deletionIndicesBuffer;
+float3 deletionCenter;
+float deletionRadius;
+
+[numthreads(64,1,1)]
+void CSMarkDeletions(uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= PointCount) return;
+
+    InstanceData d = instances[i];
+    if (d.active == 0) return;
+
+    float dist = distance(d.position, deletionCenter);
+    if (dist <= deletionRadius)
+    {
+        instances[i].active = 0;
+        deletionIndicesBuffer.Append(i);
+    }
+}
+
+// ============================================================================
+// UPDATE ARGS KERNEL
+// ============================================================================
+
+#pragma kernel CSUpdateArgs
+
+RWStructuredBuffer<uint> argsBuffer;
+uint indexCountPerInstance;
+uint instanceCount;
+
+[numthreads(1,1,1)]
+void CSUpdateArgs (uint3 id : SV_DispatchThreadID)
+{
+    argsBuffer[0] = indexCountPerInstance;
+    argsBuffer[1] = instanceCount;
+    argsBuffer[2] = 0;
+    argsBuffer[3] = 0;
+    argsBuffer[4] = 0;
+}

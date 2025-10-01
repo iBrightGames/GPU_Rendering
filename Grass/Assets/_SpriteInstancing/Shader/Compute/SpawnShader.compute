@@ -1,0 +1,20 @@
+// #pragma kernel CSSpawn
+
+// #include "InstanceData.hlsl"
+
+// RWStructuredBuffer<InstanceData> outputBuffer;
+
+// uint seed;
+// float3 minPos;
+// float3 maxPos;
+
+// [numthreads(64,1,1)]
+// void CSSpawn (uint3 id : SV_DispatchThreadID)
+// {
+//     uint i = id.x;
+//     InstanceData d;
+//     d.position = lerp(minPos, maxPos, frac(sin(i * 12.9898 + seed) * 43758.5453));
+//     d.velocity = float3(0,0,0);
+//     d.active = 1;
+//     outputBuffer[i] = d;
+// }

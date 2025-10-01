@@ -1,0 +1,23 @@
+#pragma kernel CSCull
+
+#include "InstanceData.hlsl"
+
+StructuredBuffer<InstanceData> inputBuffer;
+AppendStructuredBuffer<InstanceData> filteredBuffer;
+
+float3 minBounds;
+float3 maxBounds;
+
+[numthreads(64,1,1)]
+void CSCull (uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= inputBuffer.Length) return;
+
+    InstanceData d = inputBuffer[i];
+    if (d.active == 0) return;
+
+    if (all(d.position >= minBounds) && all(d.position <= maxBounds)) {
+        filteredBuffer.Append(d);
+    }
+}
