@@ -1,0 +1,84 @@
+#pragma kernel NewItemAdding
+#pragma kernel SphericalCulling
+#pragma kernel PrepareRenderBuffer
+
+struct ItemData { 
+    float3 position; 
+    int active; 
+};
+
+// Buffers
+RWStructuredBuffer<ItemData> mainBuffer;
+StructuredBuffer<ItemData> newItemsBuffer;
+ConsumeStructuredBuffer<uint> freeSlotsBuffer;
+AppendStructuredBuffer<uint> freeSlotsAppendBuffer;  // Need separate buffer for appending
+AppendStructuredBuffer<ItemData> deletedItemsBuffer;
+AppendStructuredBuffer<ItemData> renderBuffer;
+
+// Constants
+uint newItemsCount;
+float3 playerPos;
+float radius;
+uint instanceCount;
+
+// Add new items
+[numthreads(64,1,1)]
+void NewItemAdding(uint3 id : SV_DispatchThreadID)
+{
+    uint idx = id.x;
+    if (idx >= newItemsCount) return;
+    
+    // Consume returns the actual index value from the buffer
+    uint freeIndex = freeSlotsBuffer.Consume();
+    
+    // Load new item data and mark as active
+    ItemData newItem = newItemsBuffer[idx];
+    newItem.active = 1;
+    
+    // Write to the free slot in main buffer
+    mainBuffer[freeIndex] = newItem;
+}
+
+// Spherical culling (erase)
+[numthreads(64,1,1)]
+void SphericalCulling(uint3 id : SV_DispatchThreadID)
+{
+    uint idx = id.x;
+    if (idx >= instanceCount) return;
+    
+    ItemData data = mainBuffer[idx];
+    
+    // Only check active items
+    if (data.active == 1)
+    {
+        float3 diff = data.position - playerPos;
+        float distSq = dot(diff, diff);
+        float radiusSq = radius * radius;
+        
+        if (distSq <= radiusSq)
+        {
+            // Deactivate the item
+            data.active = 0;
+            mainBuffer[idx] = data;
+            
+            // Add to deleted items and free slots
+            deletedItemsBuffer.Append(data);
+            freeSlotsAppendBuffer.Append(idx);
+        }
+    }
+}
+
+// Prepare render buffer
+[numthreads(64,1,1)]
+void PrepareRenderBuffer(uint3 id : SV_DispatchThreadID)
+{
+    uint idx = id.x;
+    if (idx >= instanceCount) return;
+    
+    ItemData data = mainBuffer[idx];
+    if (data.active == 1)
+    {
+        renderBuffer.Append(data);
+    }
+}
+

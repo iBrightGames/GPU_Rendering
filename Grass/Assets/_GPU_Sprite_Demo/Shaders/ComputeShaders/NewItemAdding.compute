@@ -1,0 +1,10 @@
+// #pragma kernel NewItemAdding
+// #include "Manager.hlsl"
+
+// [numthreads(64,1,1)]
+// void NewItemAdding(uint3 id: SV_DISPATCHTHREADID){
+//     uint idx=id.x;
+//     if(idx>=instanceCount)return;
+//     ItemData data=newItemsBuffer[idx];
+
+// }

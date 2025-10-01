@@ -1,0 +1,45 @@
+// #pragma kernel FrustumCulling
+// #include "Manager.hlsl"
+
+
+// float4x4 frustumVPMatrix;
+
+// bool IsInFrustum(float3 worldPos)
+// {
+    
+//     float4 clipPos = mul(frustumVPMatrix, float4(worldPos, 1.0f));
+
+
+//     if (clipPos.w <= 0.0f) 
+//     {
+//         return false;
+//     }
+
+//     float w = clipPos.w;
+
+//     return (
+//         abs(clipPos.x) <= w && // Left/Right culling
+//         abs(clipPos.y) <= w && // Top/Bottom culling
+//         clipPos.z >= 0.0f &&   // Near Plane (Z clip is [0, w])
+//         clipPos.z <= w         // Far Plane (Z clip is [0, w])
+//     );
+// }
+
+// [numthreads(64,1,1)]
+// void FrustumCulling(uint3 id : SV_DispatchThreadID)
+// {
+//     uint idx = id.x;
+//     if (idx >= instanceCount) return;
+
+//     ItemData data = AllItemsBuffer[idx];
+    
+//     if (data.active == 1) 
+//     {
+//         if (!IsInFrustum(data.position))
+//         {
+//             data.active = 0;
+//         }
+//     }
+    
+//     intermediateBuffer[idx] = data;
+// }

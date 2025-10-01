@@ -1,0 +1,26 @@
+// #pragma kernel SphericalCulling
+// #include "Manager.hlsl"
+
+// [numthreads(64,1,1)]
+// void SphericalCulling(uint3 id : SV_DispatchThreadID)
+// {
+//     uint idx = id.x;
+//     if (idx >= instanceCount) return;
+
+//     ItemData data = instanceBuffer[idx];
+    
+//     float3 diff = data.position - playerPos;
+//     float distSq = dot(diff, diff);
+//     float radiusSq = radius * radius;
+    
+//     if (distSq < radiusSq)
+//     {
+//         data.active = 0; 
+//     }
+//     else
+//     {
+//         data.active = 1; 
+//     }
+    
+//     resultBuffer[idx] = data;
+// }
