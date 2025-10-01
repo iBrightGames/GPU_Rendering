@@ -361,10 +361,16 @@ MonoBehaviour:
   maxInstances: 100000
   spawnPerFrame: 100
   eraseRadius: 5
-  minPosition: {x: 0, y: 0, z: 0}
+  minPosition: {x: -500, y: 0, z: 0}
   maxPosition: {x: 1000, y: 100, z: 0}
   instanceCompute: {fileID: 7200000, guid: 4da54efe2b5d71c4e835402baeed09ba, type: 3}
   instancingMaterial: {fileID: 2100000, guid: 7d7c9b5798421ab46a5b39368c783278, type: 2}
+  showDeletedGizmos: 1
+  deletedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  gizmoRadius: 1
+  statsUpdateInterval: 1
+  trackDeletedItems: 1
+  gizmoDisplayDuration: 1
 --- !u!4 &774674939
 Transform:
   m_ObjectHideFlags: 0
