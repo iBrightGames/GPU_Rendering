@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpawnVisualData
   referenceGameObject: {fileID: 4549255767189865243, guid: c56ca501a79e04245b0ac1ebb680f99c, type: 3}
   mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  material: {fileID: 2100000, guid: 0f6eb7cc7134cac42b9b5c99b5843d77, type: 2}
+  material: {fileID: 0}
   spriteReferenceObject: {fileID: 4549255767189865243, guid: c56ca501a79e04245b0ac1ebb680f99c, type: 3}
   sprite: {fileID: 21300000, guid: 3831e4b5338233e489fcc806a91c6b7e, type: 3}
-  spriteMaterial: {fileID: 2100000, guid: 0f6eb7cc7134cac42b9b5c99b5843d77, type: 2}
-  use2D: 1
+  spriteMaterial: {fileID: 0}
+  use2D: 0

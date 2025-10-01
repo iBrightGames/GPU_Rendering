@@ -119,51 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &61375379
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 61375381}
-  - component: {fileID: 61375380}
-  m_Layer: 0
-  m_Name: GameObject (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &61375380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 61375379}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 165a10a78d83cab4bb4ae343b90066b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnArea: {fileID: 11400000, guid: 4c201f2e2dd0aaf4f83ffe1614e0927d, type: 2}
---- !u!4 &61375381
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 61375379}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &209326237
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,7 +135,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &209326238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,7 +155,7 @@ MonoBehaviour:
   spawnPerFrame: 10
   eraseRadius: 5
   scaleMultiplier: 1
-  minPosition: {x: -100, y: -100, z: 0}
+  minPosition: {x: -100, y: 100, z: 0}
   maxPosition: {x: 0, y: 0, z: 0}
   filterComputeShader: {fileID: 7200000, guid: 1f0bea67633a77447a99837472f953ec, type: 3}
   instancingMaterial: {fileID: 2100000, guid: 5c768cddd1176804a89a351ac3de54e3, type: 2}
@@ -450,59 +405,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1122281390
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1122281392}
-  - component: {fileID: 1122281391}
-  m_Layer: 0
-  m_Name: GameObject (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1122281391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122281390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18b1ba6e359045140a633db9480e4fc9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  computeShader: {fileID: 7200000, guid: edf2f35a93f8adc489a1fc4fb3339dfd, type: 3}
-  maxItems: 10000
-  deleteRadius: 5
-  spawnRadius: 50
-  spawnPerFrame: 10
-  player: {fileID: 1043464652}
-  mainCamera: {fileID: 1270858666}
-  itemMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  itemMaterial: {fileID: 2100000, guid: d30d8c7a671104e408d677f6cecd1695, type: 2}
---- !u!4 &1122281392
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122281390}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1270858664
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,7 +645,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1423665392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -758,7 +660,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 1043464648}
   sourceSprite: {fileID: 1392248985}
-  maxInstances: 100000
+  maxInstances: 73631
   startInstanceCount: 10000
   spawnPerFrame: 1000
   eraseRadius: 10
@@ -794,5 +696,3 @@ SceneRoots:
   - {fileID: 1392248986}
   - {fileID: 1423665393}
   - {fileID: 209326239}
-  - {fileID: 61375381}
-  - {fileID: 1122281392}

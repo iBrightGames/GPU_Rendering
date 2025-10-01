@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: NewSphereSpawnData
   m_EditorClassIdentifier: Assembly-CSharp::SphereSpawnData
   center: {x: 0, y: 0, z: 0}
-  startRadius: 9
-  maxRadius: 132
-  layerCount: 21
+  startRadius: 5
+  maxRadius: 100
+  layerCount: 5
   expandFromCenter: 1
   gizmoColor: {r: 0, g: 0, b: 1, a: 1}
   showGizmos: 1
