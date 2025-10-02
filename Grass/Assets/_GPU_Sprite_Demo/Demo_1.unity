@@ -358,7 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 822841059}
   sourceSprite: {fileID: 408564042}
-  maxInstances: 100000
+  maxInstances: 1000000
   spawnPerFrame: 100
   eraseRadius: 5
   minPosition: {x: -500, y: 0, z: 0}
@@ -367,13 +367,10 @@ MonoBehaviour:
   instancingMaterial: {fileID: 2100000, guid: 7d7c9b5798421ab46a5b39368c783278, type: 2}
   showDeletedGizmos: 1
   deletedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  gizmoRadius: 1
-  statsUpdateInterval: 1
-  trackDeletedItems: 1
+  gizmoDotSize: 0.3
   gizmoDisplayDuration: 1
-  cullingCamera: {fileID: 0}
   enableFrustumCulling: 1
-  cullingPadding: 0.5
+  statsUpdateInterval: 1
 --- !u!4 &774674939
 Transform:
   m_ObjectHideFlags: 0
@@ -469,7 +466,7 @@ Transform:
   m_GameObject: {fileID: 822841059}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 45.6, y: 19.9, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []

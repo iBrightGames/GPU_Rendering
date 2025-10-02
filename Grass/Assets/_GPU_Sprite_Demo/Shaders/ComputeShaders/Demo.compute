@@ -1,5 +1,6 @@
 #pragma kernel AddNewItems
 #pragma kernel SphericalCulling
+#pragma kernel CapsuleCulling
 #pragma kernel PrepareRenderBuffer
 
 struct ItemData { 
@@ -22,6 +23,11 @@ float3 playerPos;
 float radius;
 uint instanceCount;
 int enableFrustum;
+
+// Capsule culling constants
+float3 mouseStartPos;
+float3 mouseEndPos;
+float lineRadius;
 
 // Frustum culling function
 bool IsInFrustum(float3 position)
@@ -81,6 +87,57 @@ void SphericalCulling(uint3 id : SV_DispatchThreadID)
     }
 }
 
+// Capsule/Line segment culling - mouse'un geçtiği yolu siler
+[numthreads(64,1,1)]
+void CapsuleCulling(uint3 id : SV_DispatchThreadID)
+{
+    uint idx = id.x;
+    if (idx >= instanceCount) return;
+    
+    ItemData data = mainBuffer[idx];
+    
+    if (data.active == 1)
+    {
+        // Point to line segment distance calculation
+        float3 line = mouseEndPos - mouseStartPos;
+        float lineLength = length(line);
+        
+        // Eğer çok kısa bir hareket varsa, sphere culling yap
+        if (lineLength < 0.001)
+        {
+            float3 diff = data.position - mouseStartPos;
+            float distSq = dot(diff, diff);
+            
+            if (distSq <= lineRadius * lineRadius)
+            {
+                data.active = 0;
+                mainBuffer[idx] = data;
+                deletedItemsBuffer.Append(data);
+            }
+        }
+        else
+        {
+            // Line segment culling
+            float3 lineDir = line / lineLength;
+            
+            float3 toPoint = data.position - mouseStartPos;
+            float t = dot(toPoint, lineDir);
+            t = clamp(t, 0.0, lineLength);
+            
+            float3 closestPoint = mouseStartPos + lineDir * t;
+            float3 diff = data.position - closestPoint;
+            float distSq = dot(diff, diff);
+            
+            if (distSq <= lineRadius * lineRadius)
+            {
+                data.active = 0;
+                mainBuffer[idx] = data;
+                deletedItemsBuffer.Append(data);
+            }
+        }
+    }
+}
+
 // Prepare render buffer with frustum culling
 [numthreads(64,1,1)]
 void PrepareRenderBuffer(uint3 id : SV_DispatchThreadID)
@@ -105,3 +162,112 @@ void PrepareRenderBuffer(uint3 id : SV_DispatchThreadID)
         }
     }
 }
+
+// #pragma kernel AddNewItems
+// #pragma kernel SphericalCulling
+// #pragma kernel PrepareRenderBuffer
+
+// struct ItemData { 
+//     float3 position; 
+//     int active; 
+// };
+
+// // Buffers
+// RWStructuredBuffer<ItemData> mainBuffer;
+// StructuredBuffer<ItemData> newItemsBuffer;
+// AppendStructuredBuffer<ItemData> deletedItemsBuffer;
+// AppendStructuredBuffer<ItemData> renderBuffer;
+// StructuredBuffer<float4> frustumPlanes;
+// RWByteAddressBuffer counterBuffer; // Atomic counter for finding slots
+
+// // Constants
+// uint newItemsCount;
+// int maxInstances;
+// float3 playerPos;
+// float radius;
+// uint instanceCount;
+// int enableFrustum;
+
+// // Frustum culling function
+// bool IsInFrustum(float3 position)
+// {
+//     for (int i = 0; i < 6; i++)
+//     {
+//         float4 plane = frustumPlanes[i];
+//         float dist = dot(plane.xyz, position) + plane.w;
+        
+//         if (dist < -1.0)
+//             return false;
+//     }
+//     return true;
+// }
+
+// // GPU finds free slots automatically!
+// [numthreads(64,1,1)]
+// void AddNewItems(uint3 id : SV_DispatchThreadID)
+// {
+//     uint idx = id.x;
+//     if (idx >= newItemsCount) return;
+    
+//     // Use atomic counter to get next available slot
+//     uint targetIndex;
+//     counterBuffer.InterlockedAdd(0, 1, targetIndex);
+    
+//     // Wrap around if we exceed max
+//     targetIndex = targetIndex % maxInstances;
+    
+//     // Load new item and write directly
+//     ItemData newItem = newItemsBuffer[idx];
+//     newItem.active = 1;
+    
+//     mainBuffer[targetIndex] = newItem;
+// }
+
+// // Spherical culling (erase)
+// [numthreads(64,1,1)]
+// void SphericalCulling(uint3 id : SV_DispatchThreadID)
+// {
+//     uint idx = id.x;
+//     if (idx >= instanceCount) return;
+    
+//     ItemData data = mainBuffer[idx];
+    
+//     if (data.active == 1)
+//     {
+//         float3 diff = data.position - playerPos;
+//         float distSq = dot(diff, diff);
+//         float radiusSq = radius * radius;
+        
+//         if (distSq <= radiusSq)
+//         {
+//             data.active = 0;
+//             mainBuffer[idx] = data;
+//             deletedItemsBuffer.Append(data);
+//         }
+//     }
+// }
+
+// // Prepare render buffer with frustum culling
+// [numthreads(64,1,1)]
+// void PrepareRenderBuffer(uint3 id : SV_DispatchThreadID)
+// {
+//     uint idx = id.x;
+//     if (idx >= instanceCount) return;
+    
+//     ItemData data = mainBuffer[idx];
+    
+//     if (data.active == 1)
+//     {
+//         if (enableFrustum == 1)
+//         {
+//             if (IsInFrustum(data.position))
+//             {
+//                 renderBuffer.Append(data);
+//             }
+//         }
+//         else
+//         {
+//             renderBuffer.Append(data);
+//         }
+//     }
+// }
