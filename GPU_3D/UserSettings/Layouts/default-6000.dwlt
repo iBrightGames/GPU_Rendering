@@ -1954,7 +1954,7 @@ MonoBehaviour:
   m_Position:
     m_Target: {x: 0, y: 0, z: 0}
     speed: 2
-    m_Value: {x: 99.25879, y: 122.42019, z: -124.087975}
+    m_Value: {x: 0, y: 0, z: 0}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 2
@@ -2002,11 +2002,11 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
     speed: 2
-    m_Value: {x: -0, y: 0, z: -0, w: -1}
+    m_Value: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
   m_Size:
     m_Target: 10
     speed: 2
-    m_Value: 138.56949
+    m_Value: 10
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -2121,22 +2121,22 @@ MonoBehaviour:
       x: 0
       y: 21
       width: 658.3333
-      height: 221.66672
-    m_Scale: {x: 0.30787045, y: 0.30787045}
-    m_Translation: {x: 329.16666, y: 110.83336}
+      height: 221.66666
+    m_Scale: {x: 0.30787036, y: 0.30787036}
+    m_Translation: {x: 329.16666, y: 110.83333}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -1069.1726
+      x: -1069.173
       y: -360
-      width: 2138.3452
+      width: 2138.346
       height: 720
     m_MinimalGUI: 1
-  m_defaultScale: 0.30787045
-  m_LastWindowPixelSize: {x: 658.3333, y: 242.66672}
+  m_defaultScale: 0.30787036
+  m_LastWindowPixelSize: {x: 658.3333, y: 242.66666}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 00000000000000000000
