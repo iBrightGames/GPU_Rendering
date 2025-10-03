@@ -14,43 +14,19 @@ float4 color;
 
 RWStructuredBuffer<ItemData> itemBuffer;
 
-// [numthreads(64,1,1)]
-// void SimpleScaling(uint id: SV_DispatchThreadID)
-// {
-//     uint i = id.x;
-//     int spawnCount=x_Count*y_Count*z_Count;
-//     if(i>=spawnCount)return;
-//     ItemData item;
-//     float3 pos= float3(0,0,0);
-//     pos.x+=i*size-size*x_Count/2;
-//     pos.y+=i*size-size*y_Count/2;
-//     pos.z+=i*size-size*z_Count/2;
-
-//     item.position=pos;
-//     item.size=size;
-//     item.color=color;
-//     itemBuffer[i]=item;
-// }
 [numthreads(64,1,1)]
 void SimpleScaling(uint id: SV_DispatchThreadID)
 {
     uint i = id.x;
-    int spawnCount=x_Count*y_Count*z_Count;
-    if(i >= spawnCount) return; // Note: Use >= for safety
+    uint spawnCount=x_Count*y_Count*z_Count;
+    if(i >= spawnCount) return;
 
-    // --- FIX: Correct 1D to 3D grid index conversion ---
     
-    // Calculate the 3D index (x_idx, y_idx, z_idx) from the flat index i
     uint x_idx = i % x_Count;
     uint y_z_plane_count = x_Count * y_Count;
     uint z_idx = i / y_z_plane_count;
     uint y_idx = (i % y_z_plane_count) / x_Count;
 
-    // --- FIX: Calculate position based on the 3D index and center the grid ---
-    
-    // Calculate the position. We use the index * size to get the coordinate.
-    // We then subtract a centering offset: (Count - 1) * size / 2.0
-    // (Count - 1) is used because if Count=3, the indices are 0, 1, 2, a span of 2 * size.
     
     float3 pos;
     
@@ -66,7 +42,6 @@ void SimpleScaling(uint id: SV_DispatchThreadID)
     float z_offset = (float)(z_Count - 1) * size / 2.0;
     pos.z = (float)z_idx * size - z_offset;
 
-    // The rest of the logic remains the same
     ItemData item;
     item.position = pos;
     item.size = size;
