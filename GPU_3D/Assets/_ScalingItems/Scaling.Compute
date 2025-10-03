@@ -1,0 +1,140 @@
+#pragma kernel BuildGrid
+#pragma kernel ResolveCollisions
+#pragma kernel GrowBalls
+#pragma kernel PrepareRender
+
+struct ItemData {
+    float3 position;
+    float radius;
+};
+
+// Top buffer
+RWStructuredBuffer<ItemData> itemBuffer;
+
+// Grid yapısı
+RWStructuredBuffer<int> gridHeads;
+RWStructuredBuffer<int> gridNext;
+
+int3 gridDims;
+float cellSize;
+uint itemCount;
+
+float deltaTime;
+float growthRate;
+
+// === HASH Fonksiyonları (int tabanlı) ===
+int3 WorldToGridFloat(float3 pos, float cellSize) {
+    // float grid coords
+    return (int3)floor(pos / cellSize);
+}
+
+uint Hash(int3 gridPos, int3 dims) {
+    // assume gridPos already validated to be within [0,dims)
+    return (uint)(gridPos.x * dims.y * dims.z +
+                  gridPos.y * dims.z +
+                  gridPos.z);
+}
+
+// === 1. BuildGrid ===
+[numthreads(256,1,1)]
+void BuildGrid(uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= itemCount) return;
+
+    ItemData self = itemBuffer[i];
+    int3 gridPos = WorldToGridFloat(self.position, cellSize);
+
+    // bounds check
+    if (gridPos.x < 0 || gridPos.y < 0 || gridPos.z < 0) return;
+    if (gridPos.x >= gridDims.x || gridPos.y >= gridDims.y || gridPos.z >= gridDims.z) return;
+
+    uint hash = Hash(gridPos, gridDims);
+
+    // Linked list prepend: Correct atomic operation for swapping values
+    // InterlockedExchange(Destination, Value, Original_Value)
+    // It returns the original value at Destination *before* the swap.
+    int previousHead;
+    
+    InterlockedExchange(gridHeads[hash], (int)i, previousHead);
+    
+    gridNext[i] = previousHead;
+}
+// === 2. ResolveCollisions ===
+[numthreads(256,1,1)]
+void ResolveCollisions(uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= itemCount) return;
+
+    ItemData self = itemBuffer[i];
+    int3 g = WorldToGridFloat(self.position, cellSize);
+
+    for (int dx=-1; dx<=1; dx++)
+    for (int dy=-1; dy<=1; dy++)
+    for (int dz=-1; dz<=1; dz++)
+    {
+        int3 ng = g + int3(dx,dy,dz);
+
+        if (ng.x < 0 || ng.y < 0 || ng.z < 0) continue;
+        if (ng.x >= gridDims.x || ng.y >= gridDims.y || ng.z >= gridDims.z) continue;
+
+        uint hash = Hash(ng, gridDims);
+
+        int j = gridHeads[hash];
+        while (j != -1)
+        {
+            if (j != i)
+            {
+                ItemData other = itemBuffer[j];
+                float3 diff = other.position - self.position;
+                float dist = length(diff);
+                float minDist = self.radius + other.radius;
+
+                if (dist < minDist && dist > 1e-5)
+                {
+                    float penetration = minDist - dist;
+                    float3 dir = diff / dist;
+                    self.position -= dir * (penetration * 0.5);
+                }
+            }
+            j = gridNext[j];
+        }
+    }
+
+    itemBuffer[i] = self;
+}
+
+// === 3. GrowBalls ===
+[numthreads(256,1,1)]
+void GrowBalls(uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= itemCount) return;
+
+    ItemData self = itemBuffer[i];
+    self.radius *= (1.0 + growthRate * deltaTime);
+    itemBuffer[i] = self;
+}
+
+// Render için world matrix buffer
+RWStructuredBuffer<float4x4> renderBuffer;
+
+[numthreads(256,1,1)]
+void PrepareRender(uint3 id : SV_DispatchThreadID)
+{
+    uint i = id.x;
+    if (i >= itemCount) return;
+
+    ItemData self = itemBuffer[i];
+
+    // create world matrix (column-major vs row-major can vary; this is safe)
+    float4x4 m = float4x4(
+        float4(self.radius, 0, 0, 0),
+        float4(0, self.radius, 0, 0),
+        float4(0, 0, self.radius, 0),
+        float4(self.position.x, self.position.y, self.position.z, 1)
+    );
+
+    renderBuffer[i] = m;
+}
