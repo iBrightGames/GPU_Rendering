@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_BallRender
-  m_Shader: {fileID: 4800000, guid: a72ab275f86ab174da655500dba9afed, type: 3}
+  m_Name: Unlit_SimpleScaling
+  m_Shader: {fileID: 4800000, guid: 732aa1e6d7d860a47bbd83385e507fcc, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,8 +24,9 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _Size: 4.25
     m_Colors:
-    - _Color: {r: 0.59620047, g: 0, b: 1, a: 1}
+    - _Color: {r: 0.047169663, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

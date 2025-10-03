@@ -435,7 +435,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 840164511}
-  - component: {fileID: 840164510}
+  - component: {fileID: 840164512}
   m_Layer: 0
   m_Name: Scaling
   m_TagString: Untagged
@@ -443,24 +443,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &840164510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 840164509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f6726bd7be16254d87c5802c7d9d3d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  compute: {fileID: 7200000, guid: fa2bc0ac556c5e94db813d081ee232fc, type: 3}
-  mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  material: {fileID: 2100000, guid: 9ab3363407b71e94da0d592eac4ee935, type: 2}
-  ballCount: 1000
-  gridSize: {x: 50, y: 50, z: 50}
-  cellSize: 1
 --- !u!4 &840164511
 Transform:
   m_ObjectHideFlags: 0
@@ -477,6 +459,27 @@ Transform:
   - {fileID: 1903116838}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &840164512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840164509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f187fde4b676445b4212b73c38dcd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  simpleScalingCompute: {fileID: 7200000, guid: 3d5f6bbe79938164a8775b97b134aff0, type: 3}
+  prefab: {fileID: 1903116837}
+  material: {fileID: 2100000, guid: 0bd23760107c85e4b858013f12d6ece1, type: 2}
+  mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  x_Count: 32
+  y_Count: 25
+  z_Count: 0
+  itemSize: 1.16
+  itemColor: {r: 0, g: 0.93049335, b: 1, a: 1}
 --- !u!1 &1074282612
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,7 +604,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1190781325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -652,7 +655,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1255815055
 MonoBehaviour:
   m_ObjectHideFlags: 0
