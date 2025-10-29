@@ -340,27 +340,31 @@ public class GPU_Sprite_InstancingController : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Box(new Rect(10, 10, 350, 160), "");
+        GUI.Box(new Rect(100, 100, 500, 160), "");
 
-        int yPos = 20;
-        int lineHeight = 35;
+        int yPos = 100;
+        int lineHeight = 100;
 
-        GUI.Label(new Rect(20, yPos, 400, 30), $"Total Capacity: {totalInstances}", guiStyle);
+        GUI.Label(new Rect(50, yPos, 600, 100), $"Total Capacity: {totalInstances}", guiStyle);
+        guiStyle.fontSize = 50;
         yPos += lineHeight;
 
         GUIStyle activeStyle = new GUIStyle(guiStyle);
         activeStyle.normal.textColor = Color.green;
-        GUI.Label(new Rect(20, yPos, 400, 30), $"Active Items: {activeCount}", activeStyle);
+        activeStyle.fontSize = 50;
+        GUI.Label(new Rect(50, yPos, 600, 100), $"Active Items: {activeCount}", activeStyle);
         yPos += lineHeight;
 
         GUIStyle emptyStyle = new GUIStyle(guiStyle);
         emptyStyle.normal.textColor = Color.cyan;
-        GUI.Label(new Rect(20, yPos, 400, 30), $"Empty Slots: {emptySlotCount}", emptyStyle);
+        emptyStyle.fontSize = 50;
+        GUI.Label(new Rect(50, yPos, 600, 100), $"Empty Slots: {emptySlotCount}", emptyStyle);
         yPos += lineHeight;
 
         GUIStyle deletedStyle = new GUIStyle(guiStyle);
         deletedStyle.normal.textColor = Color.red;
-        GUI.Label(new Rect(20, yPos, 400, 30), $"Deleted Items: {deletedItemsCount}", deletedStyle);
+        deletedStyle.fontSize = 50;
+        GUI.Label(new Rect(50, yPos, 600, 100), $"Deleted Items: {deletedItemsCount}", deletedStyle);
     }
 
     void OnDrawGizmos()
@@ -386,7 +390,7 @@ public class GPU_Sprite_InstancingController : MonoBehaviour
         // Draw erase radius around player
         if (Player != null)
         {
-            Gizmos.color = new Color(1f, 1f, 0f, 0.3f); // Semi-transparent yellow
+            Gizmos.color = new Color(1f, 1f, 0f, 1f); // Semi-transparent yellow
             Gizmos.DrawWireSphere(Player.transform.position, eraseRadius);
         }
     }
